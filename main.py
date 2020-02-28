@@ -69,12 +69,6 @@ Builder.load_string("""
             
 <JottoScreen>:
     id: Jotto
-    # canvas.before:
-    #     Color:
-    #         rgb: .20, .87, 1
-    #     Rectangle:
-    #         pos: self.pos
-    #         size: self.size
     BoxLayout:
         id: JottoBox
         orientation: "vertical"
