@@ -20,9 +20,6 @@ Config.set("graphics", 'resizable', "0")
 Config.set("graphics", 'width', "600")
 Config.set("graphics", 'hight', "600")
 
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
 Builder.load_string("""
 <MenuScreen>:
     BoxLayout:
