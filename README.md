@@ -4,3 +4,9 @@ It's my first real project, so i think there is some useless fragments or idioti
 You should have Kivy framework installed to run this code: https://kivy.org
 
 files main.py and Dictionary.py are necessary
+
+vX.Y.Z
+where:
+X - finished parts
+Y - number of preparing part
+Z - completion rate (for Y)
