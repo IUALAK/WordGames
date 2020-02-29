@@ -360,8 +360,7 @@ Builder.load_string("""
             on_text_validate: root.AddWord(self.text); self.text = "" #TODO: добавь функции для добавления слова в дневник
         Button:
             text: "Add Word"
-            on_press: addwordtextinput.text = ""
-            on_release:  addwordtextinput.focus = True
+            on_release: root.AddWord(addwordtextinput.text); addwordtextinput.text = ""; addwordtextinput.focus = True
         Button:
             text: "Back to Menu"
             on_press: root.manager.current = "menu"
