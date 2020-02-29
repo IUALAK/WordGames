@@ -4,7 +4,7 @@
 
 import kivy
 import random
-from Dictionary import ReturnRandomWord
+from Dictionary import ReturnRandomWord, AddWordToDictionary
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.button import Button
@@ -281,7 +281,7 @@ Builder.load_string("""
             spacing: 5
             Button:
                 text: "Back to menu or restart a session "
-                on_press: root.BackToMenu() #TODO:сделай всплывающее меню для выхода в меню V prinvipe Vse!
+                on_press: root.BackToMenu()
 
 
 <SettingsScreen>:
@@ -357,7 +357,7 @@ Builder.load_string("""
         TextInput:
             id: addwordtextinput
             multiline: False
-            on_text_validate: self.text = "" #TODO: добавь функции для добавления слова в дневник
+            on_text_validate: root.AddWord(self.text); self.text = "" #TODO: добавь функции для добавления слова в дневник
         Button:
             text: "Add Word"
             on_press: addwordtextinput.text = ""
@@ -373,7 +373,9 @@ Builder.load_string("""
 
 # Declare screens
 class AddWordsScreen(Screen):
-    pass
+    def AddWord (instance, text):
+        AddWordToDictionary(text)
+        
 
 class MenuScreen(Screen):
     pass
