@@ -58,6 +58,7 @@ Builder.load_string("""
             color: 0, 0, 0, 1
         Button:
             text: "Tail words"
+            on_press: root.manager.current = "tail"
         Button:
             text: "Jotto"
             on_press: root.manager.current = "jotto"
@@ -84,10 +85,11 @@ Builder.load_string("""
                     size: self.size
             text:  ""
             text_size: self.size
+            font_size: 14
             color: 0, 0, 0, 1
         TextInput:
             id: JottoInput
-            on_text_validate: root.IsItRight(self.text, root.dictionary); self.text = "" #JottoLabel.text += "\\n" + self.text
+            on_text_validate: root.IsItRight(self.text, root.dictionary); self.text = "" 
             size_hint: 1, 0.2
             multiline: False
         GridLayout:
@@ -280,9 +282,33 @@ Builder.load_string("""
             size_hint: 1, .15
             spacing: 5
             Button:
-                text: "Back to menu or restart a session "
+                text: "Back to menu or restart a session" #TODO:remake this part (later)
                 on_press: root.BackToMenu()
 
+<TailWordsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 30, 50, 30, 35
+        spacing: 10
+        Label:
+            canvas.before:
+                Color:
+                    rgb: 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            text:  ""
+            text_size: self.size
+            color: 0, 0, 0, 1
+        TextInput:
+            size_hint: 1, 0.2
+            multiline: False
+        BoxLayout:
+            orientation: "vertical"
+            Button:
+                text: "validate your answer"
+            Button:
+                text: "Back to menu or restart a session"
 
 <SettingsScreen>:
     id: Settings
@@ -472,12 +498,18 @@ class JottoScreen(Screen):
             pass
         elif len(instance.dictionary) != limitnum:
             JottoScreen.LimitWordFunc(instance, limitnum)
+
+class TailWordsScreen(Screen):
+    pass
+
 class SettingsScreen(Screen):
     pass
 
 
 menu = MenuScreen(name = "menu")
 jotto = JottoScreen(name = "jotto")
+tail = TailWordsScreen(name = "tail")
+
 # Create the screen manager
 sm = ScreenManager(size_hint = (1, 1), size = (600, 600))
 sm.canvas.before.add(Color(.20, .87, 1))
@@ -485,6 +517,7 @@ sm.canvas.before.add(Rectangle(size = sm.size))
 sm.add_widget(menu)
 sm.add_widget(FastGameChooseScreen(name = "choose_a_game"))
 sm.add_widget(jotto)
+sm.add_widget(tail)
 sm.add_widget(SettingsScreen(name = "settings", id = "Settings"))
 sm.add_widget(AddWordsScreen(name = "addwords"))
 
