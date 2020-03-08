@@ -37,3 +37,13 @@ def AddWordToDictionary(word):
     global dictionary
     dictionary += [word]
     return dictionary
+
+# For TailWord:
+PreviousWord =[""]
+
+def PreviousWordIs(word):
+    global PreviousWord
+    del PreviousWord[0:len(PreviousWord)-1]
+    del PreviousWord[0]
+    PreviousWord += word
+    return PreviousWord

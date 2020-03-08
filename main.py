@@ -4,7 +4,7 @@
 
 import kivy
 import random
-from Dictionary import ReturnRandomWord, AddWordToDictionary
+from Dictionary import ReturnRandomWord, AddWordToDictionary, PreviousWord, PreviousWordIs
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.button import Button
@@ -291,6 +291,7 @@ Builder.load_string("""
         padding: 30, 50, 30, 35
         spacing: 10
         Label:
+            id: TailLabel
             canvas.before:
                 Color:
                     rgb: 1, 1, 1
@@ -303,12 +304,15 @@ Builder.load_string("""
         TextInput:
             size_hint: 1, 0.2
             multiline: False
+            on_text_validate: TailLabel.text += "\\n" + self.text.capitalize(); root.NextWord(self.text); self.text = ""
         BoxLayout:
             orientation: "vertical"
             Button:
                 text: "validate your answer"
+                # on_release: 
             Button:
                 text: "Back to menu or restart a session"
+                on_press: root.manager.current = "menu" #TODO: !!!don't forget to remake this part!!!
 
 <SettingsScreen>:
     id: Settings
@@ -500,7 +504,20 @@ class JottoScreen(Screen):
             JottoScreen.LimitWordFunc(instance, limitnum)
 
 class TailWordsScreen(Screen):
-    pass
+    IHaveSaw = ""
+    
+    def NextWord(instance, text):
+        if PreviousWord == [""] or text[0].lower() == PreviousWord[len(PreviousWord)-1]:
+            bot_text = random.choice(ReturnRandomWord())
+            if text[len(text)-1] == bot_text[0]:
+                instance.ids["TailLabel"].text += "\n" + bot_text.capitalize() + ". You have the \"" + bot_text[len(bot_text)-1].capitalize() + "\" word"
+                PreviousWordIs(bot_text)
+                print (PreviousWord)
+            else:
+                print("f")
+                TailWordsScreen.NextWord(instance, text)
+        else:
+            instance.ids["TailLabel"].text += "\nIncorrect word!"
 
 class SettingsScreen(Screen):
     pass
