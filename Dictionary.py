@@ -39,11 +39,15 @@ def AddWordToDictionary(word):
     return dictionary
 
 # For TailWord:
-PreviousWord =[""]
+PreviousWord = [""]
+DejaVu = []
 
-def PreviousWordIs(word):
+def PreviousWordIs(word, text):
     global PreviousWord
     del PreviousWord[0:len(PreviousWord)-1]
     del PreviousWord[0]
+    global DejaVu
+    DejaVu += [text]
+    DejaVu += [word]
     PreviousWord += word
     return PreviousWord

@@ -4,8 +4,8 @@
 
 import kivy
 import random
-from Dictionary import ReturnRandomWord, AddWordToDictionary, PreviousWord, PreviousWordIs
 from kivy.app import App
+from Dictionary import ReturnRandomWord, AddWordToDictionary, PreviousWord, PreviousWordIs, DejaVu
 from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition
@@ -504,17 +504,26 @@ class JottoScreen(Screen):
             JottoScreen.LimitWordFunc(instance, limitnum)
 
 class TailWordsScreen(Screen):
-    IHaveSaw = ""
-    
+    ToWin = 0
     def NextWord(instance, text):
-        if PreviousWord == [""] or text[0].lower() == PreviousWord[len(PreviousWord)-1]:
+        global ToWin
+        if text == "":
+            instance.ids["TailLabel"].text += "Write a word."
+        elif PreviousWord == [""] or text[0].lower() == PreviousWord[len(PreviousWord)-1]:
             bot_text = random.choice(ReturnRandomWord())
-            if text[len(text)-1] == bot_text[0]:
+            if text[len(text)-1] == bot_text[0] and DejaVu.count(bot_text) == 0 and DejaVu.count(text) == 0:
                 instance.ids["TailLabel"].text += "\n" + bot_text.capitalize() + ". You have the \"" + bot_text[len(bot_text)-1].capitalize() + "\" word"
-                PreviousWordIs(bot_text)
-                print (PreviousWord)
+                PreviousWordIs(bot_text, text)
+                ToWin = 0
+            elif DejaVu.count(bot_text) == 1:
+                ToWin += 1
+                if ToWin == 6:
+                    instance.ids["TailLabel"].text += "\n" + "You Won. I can't find a word"
+                else:
+                    TailWordsScreen.NextWord(instance, text)
+            elif DejaVu.count(text) == 1:
+                instance.ids["TailLabel"].text += "\n" + "Choose another one"
             else:
-                print("f")
                 TailWordsScreen.NextWord(instance, text)
         else:
             instance.ids["TailLabel"].text += "\nIncorrect word!"
