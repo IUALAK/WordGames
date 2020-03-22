@@ -27,8 +27,8 @@ dictionary += ["valley", "vendetta", "violin", "visa", "void"]                  
 dictionary += ["want", "wave", "weather", "work"]                                                                                                                                       #W
 dictionary += ["xylophone"]                                                                                                                                                             #X
 dictionary += ["yard"]                                                                                                                                                                  #Y
-dictionary += ["zero", "zone", "zenith"]                                                                                                                                                #Z
-
+dictionary += ["zero", "zone", "zenith"]                                                                                                                                               #Z
+ 
 def ReturnRandomWord():
     global dictionary
     return dictionary
@@ -50,4 +50,14 @@ def PreviousWordIs(word, text):
     DejaVu += [text]
     DejaVu += [word]
     PreviousWord += word
+    return PreviousWord
+
+def ClearTail():
+    global PreviousWord
+    global DejaVu
+    del PreviousWord[0:len(PreviousWord)-1]
+    del PreviousWord[0]
+    del DejaVu
+    PreviousWord += [""]
+    DejaVu = []
     return PreviousWord

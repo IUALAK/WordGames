@@ -5,7 +5,7 @@
 import kivy
 import random
 from kivy.app import App
-from Dictionary import ReturnRandomWord, AddWordToDictionary, PreviousWord, PreviousWordIs, DejaVu
+from Dictionary import ReturnRandomWord, AddWordToDictionary, PreviousWord, PreviousWordIs, DejaVu, ClearTail
 from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition
@@ -63,7 +63,8 @@ Builder.load_string("""
             text: "Jotto"
             on_press: root.manager.current = "jotto"
         Button:
-            text: "Word chain"
+            text: "Bulls and cows"
+            on_press: root.manager.current = "bac"
         Button:
             text: "Back to menu"
             on_press: root.manager.current = "menu"
@@ -287,6 +288,7 @@ Builder.load_string("""
 
 <TailWordsScreen>:
     BoxLayout:
+        id: TailBox
         orientation: "vertical"
         padding: 30, 50, 30, 35
         spacing: 10
@@ -302,6 +304,7 @@ Builder.load_string("""
             text_size: self.size
             color: 0, 0, 0, 1
         TextInput:
+            id: TailInput
             size_hint: 1, 0.2
             multiline: False
             on_text_validate: TailLabel.text += "\\n" + self.text.capitalize(); root.NextWord(self.text); self.text = ""
@@ -309,10 +312,41 @@ Builder.load_string("""
             orientation: "vertical"
             Button:
                 text: "validate your answer"
+                on_release: TailLabel.text += "\\n" + TailInput.text.capitalize(); root.NextWord(TailInput.text); TailInput.text = ""
+            Button:
+                text: "Back to menu or restart a session"
+                on_press: root.BackToMenu()
+
+<BullsAndCowsScreen>:
+    BoxLayout:
+        id: BACBox
+        orientation: "vertical"
+        padding: 30, 50, 30, 35
+        spacing: 10
+        Label:
+            id: BACLabel
+            canvas.before:
+                Color:
+                    rgb: 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            text:  ""
+            text_size: self.size
+            color: 0, 0, 0, 1
+        TextInput:
+            id: BACInput
+            size_hint: 1, 0.2
+            multiline: False
+            on_text_validate: BACLabel.text += "\\n" + self.text.capitalize(); root.IsItRight(self.text); self.text = ""
+        BoxLayout:
+            orientation: "vertical"
+            Button:
+                text: "validate your answer"
                 # on_release: 
             Button:
                 text: "Back to menu or restart a session"
-                on_press: root.manager.current = "menu" #TODO: !!!don't forget to remake this part!!!
+                # on_press: root.BackToMenu()
 
 <SettingsScreen>:
     id: Settings
@@ -396,16 +430,11 @@ Builder.load_string("""
             on_press: root.manager.current = "menu"
 """)
 
-# def ColorCh(instance):
-#     instance.canvas.before.add(Rectangle())
-#     instance.canvas.before.add(Color(1, 1, 1))
-
 # Declare screens
 class AddWordsScreen(Screen):
     def AddWord (instance, text):
         AddWordToDictionary(text)
         
-
 class MenuScreen(Screen):
     pass
 
@@ -414,9 +443,6 @@ class FastGameChooseScreen(Screen):
 
 class JottoScreen(Screen):
     dictionary = random.choice(ReturnRandomWord())
-    
-    def __init__(self, **kwargs):
-        super(JottoScreen, self).__init__(**kwargs)
 
     def IsItRight(instance, text, dictionary):
         text = text.capitalize()
@@ -430,9 +456,9 @@ class JottoScreen(Screen):
             dejavu += letter
 
         if text.lower() == dictionary:
-            instance.ids["JottoLabel"].text += "\n" + "You won!!!" + "\nThe correct answer is: " + text.capitalize()   
+            instance.ids["JottoLabel"].text += "\n" + "You won!!!" + "\nThe correct answer is: " + text.capitalize()
         else:
-            instance.ids["JottoLabel"].text +="\n" + text + " " + str(correctnumber)
+            instance.ids["JottoLabel"].text += "\n" + text + " " + str(correctnumber)
         
 
     def ChangeBColor(instance, self): 
@@ -451,8 +477,6 @@ class JottoScreen(Screen):
 
     def BackToMenu(instance):
 
-        ## TODO: Сделай чтобы был таймер и если игрок за 2 (прим) сек нажимает 2а раза то выход
-        #instance.ClearButtonsColor() 
         instance.remove_widget(instance.ids["JottoBox"])
         BoxToMenu = BoxLayout(orientation = "vertical",
         padding = (40, 40, 40, 40),
@@ -497,7 +521,6 @@ class JottoScreen(Screen):
     def LimitWordFunc(instance, limitnum):
         limitnum = int(limitnum)
         instance.dictionary = random.choice(ReturnRandomWord())
-        print(instance.dictionary)
         if limitnum == 0:
             pass
         elif len(instance.dictionary) != limitnum:
@@ -527,6 +550,88 @@ class TailWordsScreen(Screen):
                 TailWordsScreen.NextWord(instance, text)
         else:
             instance.ids["TailLabel"].text += "\nIncorrect word!"
+    
+    def BackToMenu (instance):
+        instance.remove_widget(instance.ids["TailBox"])
+        BoxToMenu = BoxLayout(orientation = "vertical",
+        padding = (40, 40, 40, 40),
+        spacing = 10)
+        BoxToMenu.add_widget(Button (text = "Go out",
+        on_press = lambda x: ClearAndQuit())
+        )
+        BoxToMenu.add_widget(Button (text = "Resume",
+        on_press = (lambda x: ReturnToGame()
+        )))
+        BoxToMenu.add_widget(Button (text = "Restart",
+        on_press = lambda x: RestartASession()))
+
+        def ClearAndQuit ():
+            ClearTail()
+            instance.ids["TailLabel"].text = ""
+            instance.ids["TailInput"].text = ""
+            sm.current = "menu"
+            instance.add_widget(instance.ids["TailBox"])
+            instance.remove_widget(BoxToMenu)
+
+        def ReturnToGame():
+            instance.add_widget(instance.ids["TailBox"])
+            instance.remove_widget(BoxToMenu)
+
+        def RestartASession():
+            ClearTail()
+            instance.ids["TailLabel"].text = ""
+            instance.ids["TailInput"].text = ""
+            instance.add_widget(instance.ids["TailBox"])
+            instance.remove_widget(BoxToMenu)
+
+
+
+        instance.add_widget(BoxToMenu)
+
+class BullsAndCowsScreen(Screen):
+    dictionary = None
+
+    def __init__(self, **kwargs):
+        super(BullsAndCowsScreen, self).__init__(**kwargs)
+        global dictionary
+        dictionary = random.choice(ReturnRandomWord())
+        if len(dictionary) != 5:
+            BullsAndCowsScreen.__init__(self, **kwargs)
+        for letter in "abcdefghijklmnopqrstuvwxyz":
+            if dictionary.count(letter) == 2:
+                BullsAndCowsScreen.__init__(self, **kwargs)
+        print(dictionary)
+            
+            
+    
+    def IsItRight(instance, text):
+        global dictionary
+        ForChecking = 0
+        ForBulls = 0
+        ForCows = 0
+        for letter in "abcdefghijklmnopqrstuvwxyz":
+            if text.lower().count(letter) >= 2 :
+                ForChecking = 1
+                print(text.count(letter))
+        print (ForChecking)
+        if len(text) == 5 and ForChecking == 0:
+            for letter in range(1, 6):
+                if text[letter-1] == dictionary[letter-1]:
+                    ForBulls += 1
+                elif text.count(dictionary[letter-1]) == 1:
+                    ForCows += 1
+            if ForBulls == 5:
+                instance.ids["BACLabel"].text += "\nYou won!"
+            else:
+                instance.ids["BACLabel"].text += "\nYou have " + str(ForBulls) + " Bulls and " + str(ForCows) + " Cows"
+        elif ForChecking == 1:
+            instance.ids["BACLabel"].text += "\nYou have an iteration in your word!"
+        elif len(text) != 5: 
+            instance.ids["BACLabel"].text += "\nYour word should be 5 letters long!"        
+
+                    
+            
+
 
 class SettingsScreen(Screen):
     pass
@@ -544,6 +649,7 @@ sm.add_widget(menu)
 sm.add_widget(FastGameChooseScreen(name = "choose_a_game"))
 sm.add_widget(jotto)
 sm.add_widget(tail)
+sm.add_widget(BullsAndCowsScreen(name = "bac"))
 sm.add_widget(SettingsScreen(name = "settings", id = "Settings"))
 sm.add_widget(AddWordsScreen(name = "addwords"))
 
@@ -568,8 +674,6 @@ class WordGamesApp(App):
     def build(self):
         return sm
 
-
-# WordGamesApp.ColorCh(menu)
 
 if __name__ == '__main__':
     WordGamesApp().run()
