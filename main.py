@@ -505,7 +505,6 @@ class JottoScreen(Screen):
         global limitnum
         limitnum = int(num)
         instance.dictionary = random.choice(ReturnRandomWord())
-        print(instance.dictionary)
         if limitnum == 0:
             pass
         elif len(instance.dictionary) != limitnum:
