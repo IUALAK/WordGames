@@ -422,7 +422,13 @@ class FastGameChooseScreen(Screen):
     pass
 
 class JottoScreen(Screen):
-    dictionary = random.choice(ReturnRandomWord())
+    dictionary = ""
+    global limitnum
+    limitnum = 0
+
+    def __init__(self, **kwargs):
+        super(JottoScreen, self).__init__(**kwargs)
+        JottoScreen.LimitWordFunc(self, limitnum)
 
     def IsItRight(instance, text, dictionary):
         text = text.capitalize()
@@ -440,7 +446,6 @@ class JottoScreen(Screen):
         else:
             instance.ids["JottoLabel"].text += "\n" + text + " " + str(correctnumber)
         
-
     def ChangeBColor(instance, self): 
         if self.background_color[0] == .85:
             self.background_color = (204, 0, 0, 1)
@@ -482,8 +487,7 @@ class JottoScreen(Screen):
             instance.add_widget(instance.ids["JottoBox"])
             instance.remove_widget(BoxToMenu)
 
-            global dictionary
-            dictionary = random.choice(ReturnRandomWord())
+            JottoScreen.LimitWordFunc(instance, limitnum)
 
         def RestartASession():
             instance.ClearButtonsColor()
@@ -492,15 +496,16 @@ class JottoScreen(Screen):
             instance.add_widget(instance.ids["JottoBox"])
             instance.remove_widget(BoxToMenu)
             
-            global dictionary
-            dictionary = random.choice(ReturnRandomWord())
+            JottoScreen.LimitWordFunc(instance, limitnum)
 
 
         instance.add_widget(BoxToMenu)
 
-    def LimitWordFunc(instance, limitnum):
-        limitnum = int(limitnum)
+    def LimitWordFunc(instance, num):
+        global limitnum
+        limitnum = int(num)
         instance.dictionary = random.choice(ReturnRandomWord())
+        print(instance.dictionary)
         if limitnum == 0:
             pass
         elif len(instance.dictionary) != limitnum:
@@ -571,8 +576,6 @@ class TailWordsScreen(Screen):
 class BullsAndCowsScreen(Screen):
     dictionary = None
 
-    
-            
     def ChooseAWord(instance):        
         global dictionary
         dictionary = random.choice(ReturnRandomWord())
@@ -649,8 +652,6 @@ class BullsAndCowsScreen(Screen):
         
         instance.add_widget(BoxToMenu)
             
-
-
 class SettingsScreen(Screen):
     pass
 
