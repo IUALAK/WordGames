@@ -343,10 +343,10 @@ Builder.load_string("""
             orientation: "vertical"
             Button:
                 text: "validate your answer"
-                # on_release: 
+                on_release: BACLabel.text += "\\n" + BACInput.text.capitalize(); root.IsItRight(BACInput.text); BACInput.text = ""
             Button:
                 text: "Back to menu or restart a session"
-                # on_press: root.BackToMenu()
+                on_press: root.BackToMenu()
 
 <SettingsScreen>:
     id: Settings
@@ -591,19 +591,22 @@ class TailWordsScreen(Screen):
 class BullsAndCowsScreen(Screen):
     dictionary = None
 
-    def __init__(self, **kwargs):
-        super(BullsAndCowsScreen, self).__init__(**kwargs)
+    
+            
+    def ChooseAWord(instance):        
         global dictionary
         dictionary = random.choice(ReturnRandomWord())
         if len(dictionary) != 5:
-            BullsAndCowsScreen.__init__(self, **kwargs)
+            BullsAndCowsScreen.ChooseAWord(instance)
         for letter in "abcdefghijklmnopqrstuvwxyz":
             if dictionary.count(letter) == 2:
-                BullsAndCowsScreen.__init__(self, **kwargs)
+                BullsAndCowsScreen.ChooseAWord(instance)
         print(dictionary)
-            
-            
     
+    def __init__(self, **kwargs):
+        super(BullsAndCowsScreen, self).__init__(**kwargs)
+        BullsAndCowsScreen.ChooseAWord(self)
+
     def IsItRight(instance, text):
         global dictionary
         ForChecking = 0
@@ -624,12 +627,50 @@ class BullsAndCowsScreen(Screen):
                 instance.ids["BACLabel"].text += "\nYou won!"
             else:
                 instance.ids["BACLabel"].text += "\nYou have " + str(ForBulls) + " Bulls and " + str(ForCows) + " Cows"
+        elif text == "":
+            instance.ids["BACLabel"].text += "Write a word!"
         elif ForChecking == 1:
             instance.ids["BACLabel"].text += "\nYou have an iteration in your word!"
         elif len(text) != 5: 
-            instance.ids["BACLabel"].text += "\nYour word should be 5 letters long!"        
+            instance.ids["BACLabel"].text += "\nYour word should be 5 letters long!"       
 
-                    
+    def BackToMenu (instance):
+        instance.remove_widget(instance.ids["BACBox"])
+        BoxToMenu = BoxLayout(orientation = "vertical",
+        padding = (40, 40, 40, 40),
+        spacing = 10)
+        BoxToMenu.add_widget(Button (text = "Go out",
+        on_press = lambda x: ClearAndQuit())
+        )
+        BoxToMenu.add_widget(Button (text = "Resume",
+        on_press = (lambda x: ReturnToGame()
+        )))
+        BoxToMenu.add_widget(Button (text = "Restart",
+        on_press = lambda x: RestartASession()))
+
+        def ClearAndQuit ():
+            instance.ChooseAWord()
+            instance.ids["BACLabel"].text = ""
+            instance.ids["BACInput"].text = ""
+            sm.current = "menu"
+            instance.add_widget(instance.ids["BACBox"])
+            instance.remove_widget(BoxToMenu)
+
+        def ReturnToGame():
+            instance.add_widget(instance.ids["BACBox"])
+            instance.remove_widget(BoxToMenu)
+
+        def RestartASession():
+            instance.ChooseAWord()
+            instance.ids["BACLabel"].text = ""
+            instance.ids["BACInput"].text = ""
+            instance.add_widget(instance.ids["BACBox"])
+            instance.remove_widget(BoxToMenu)
+
+
+
+        
+        instance.add_widget(BoxToMenu)
             
 
 
