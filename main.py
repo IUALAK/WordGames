@@ -5,7 +5,7 @@
 import kivy
 import random
 from kivy.app import App
-from Dictionary import ReturnRandomWord, AddWordToDictionary, PreviousWord, PreviousWordIs, DejaVu, ClearTail
+from Dictionary import ReturnRandomWord, PreviousWord, PreviousWordIs, DejaVu, ClearTail
 from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen, FallOutTransition
@@ -38,9 +38,6 @@ Builder.load_string("""
         Button:
             text: "Settings"
             on_press: root.manager.current = "settings"
-        Button:
-            text: "Add new words"
-            on_press: root.manager.current = "addwords"
         Button:
             text: "Quit"
             on_press: exit()
@@ -310,6 +307,7 @@ Builder.load_string("""
             on_text_validate: TailLabel.text += "\\n" + self.text.capitalize(); root.NextWord(self.text); self.text = ""
         BoxLayout:
             orientation: "vertical"
+            spacing: 5
             Button:
                 text: "validate your answer"
                 on_release: TailLabel.text += "\\n" + TailInput.text.capitalize(); root.NextWord(TailInput.text); TailInput.text = ""
@@ -341,6 +339,7 @@ Builder.load_string("""
             on_text_validate: BACLabel.text += "\\n" + self.text.capitalize(); root.IsItRight(self.text); self.text = ""
         BoxLayout:
             orientation: "vertical"
+            spacing: 5
             Button:
                 text: "validate your answer"
                 on_release: BACLabel.text += "\\n" + BACInput.text.capitalize(); root.IsItRight(BACInput.text); BACInput.text = ""
@@ -412,29 +411,10 @@ Builder.load_string("""
             text: "Back to menu"
             on_press: root.manager.current = "menu"
 
-<AddWordsScreen>:
-    id: AddWord
-    BoxLayout:
-        orientation: "vertical"
-        padding: 30, 50, 30, 35
-        spacing: 5
-        TextInput:
-            id: addwordtextinput
-            multiline: False
-            on_text_validate: root.AddWord(self.text); self.text = "" #TODO: добавь функции для добавления слова в дневник
-        Button:
-            text: "Add Word"
-            on_release: root.AddWord(addwordtextinput.text); addwordtextinput.text = ""; addwordtextinput.focus = True
-        Button:
-            text: "Back to Menu"
-            on_press: root.manager.current = "menu"
 """)
 
 # Declare screens
-class AddWordsScreen(Screen):
-    def AddWord (instance, text):
-        AddWordToDictionary(text)
-        
+
 class MenuScreen(Screen):
     pass
 
@@ -601,7 +581,6 @@ class BullsAndCowsScreen(Screen):
         for letter in "abcdefghijklmnopqrstuvwxyz":
             if dictionary.count(letter) == 2:
                 BullsAndCowsScreen.ChooseAWord(instance)
-        print(dictionary)
     
     def __init__(self, **kwargs):
         super(BullsAndCowsScreen, self).__init__(**kwargs)
@@ -615,8 +594,6 @@ class BullsAndCowsScreen(Screen):
         for letter in "abcdefghijklmnopqrstuvwxyz":
             if text.lower().count(letter) >= 2 :
                 ForChecking = 1
-                print(text.count(letter))
-        print (ForChecking)
         if len(text) == 5 and ForChecking == 0:
             for letter in range(1, 6):
                 if text[letter-1] == dictionary[letter-1]:
@@ -692,7 +669,6 @@ sm.add_widget(jotto)
 sm.add_widget(tail)
 sm.add_widget(BullsAndCowsScreen(name = "bac"))
 sm.add_widget(SettingsScreen(name = "settings", id = "Settings"))
-sm.add_widget(AddWordsScreen(name = "addwords"))
 
 
 class WordGamesApp(App):

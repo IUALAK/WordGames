@@ -33,11 +33,6 @@ def ReturnRandomWord():
     global dictionary
     return dictionary
 
-def AddWordToDictionary(word):
-    global dictionary
-    dictionary += [word]
-    return dictionary
-
 # For TailWord:
 PreviousWord = [""]
 DejaVu = []
