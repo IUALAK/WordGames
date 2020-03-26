@@ -13,7 +13,6 @@ from kivy.config import Config
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Rectangle, Color, Canvas, CanvasBase
-from threading import Timer
 
 
 Config.set("graphics", 'resizable', "0")
